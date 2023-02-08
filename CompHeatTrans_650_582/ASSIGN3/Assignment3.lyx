@@ -1,0 +1,1343 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Computational Homework Assignment 3
+\end_layout
+
+\begin_layout Author
+Student : Ran Li
+\end_layout
+
+\begin_layout Section
+Problem Setting Up
+\end_layout
+
+\begin_layout Subsection*
+Problem 6.42:
+\end_layout
+
+\begin_layout Standard
+Air at a temperature of 
+\begin_inset Formula $20^{\circ}C$
+\end_inset
+
+ and a velocity of 1 
+\begin_inset Formula $m/s$
+\end_inset
+
+ flows over an aligned heated flat plate of length 1 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ A heat flux input of 
+\begin_inset Formula $200W/m^{2}$
+\end_inset
+
+ is prescribed at the surface.
+ Assuming laminar flow, calculate the temperature and velocity distribution
+ in the flow.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename 图片2.jpg
+	scale 75
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Problem 6.42 Setup
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This problem is solved using OpenFOAM
+\end_layout
+
+\begin_layout Section
+Mathematical Description of the Problem
+\end_layout
+
+\begin_layout Standard
+In the setting up of the problem, no relationship between temperature field/para
+meters and velocity field/parameters.
+ So these two fields could be regarded as independent with respect to each
+ other.
+ So the idea is to solve for velocity field first and then derive the temperatur
+e field based on the velocity field acquired.
+\end_layout
+
+\begin_layout Subsection*
+Part I: Velocity Field 
+\end_layout
+
+\begin_layout Standard
+This problem is a transient problem with a constant flow velocity of 
+\begin_inset Formula $V=1m/s$
+\end_inset
+
+.
+ Since there's no body force term and pressure gradient is also neglected,
+ governing equations for the problem could be composed as below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial u_{x}}{\partial x}+\dfrac{\partial u_{y}}{\partial y}=0\label{eq:conti}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial u_{x}}{\partial t}+u_{x}\dfrac{\partial u_{x}}{\partial x}+u_{y}\dfrac{\partial u_{x}}{\partial y}=\nu\left(\dfrac{\partial^{2}u_{x}}{\partial x^{2}}+\dfrac{\partial^{2}u_{x}}{\partial y^{2}}\right)\label{eq:mom1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial u_{y}}{\partial t}+u_{x}\dfrac{\partial u_{y}}{\partial x}+u_{y}\dfrac{\partial u_{y}}{\partial y}=\nu\left(\dfrac{\partial^{2}u_{y}}{\partial x^{2}}+\dfrac{\partial^{2}u_{y}}{\partial y^{2}}\right)\label{eq:mom2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Velocity profile of the flow field could be derived by solving the equations
+ above, where equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:conti"
+
+\end_inset
+
+ is the continuity equation and equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mom1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mom2"
+
+\end_inset
+
+ are momentum equations along 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ axises.
+ For our 2D boundary layer problem, these equations could be then simplified
+ into the following format:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial u_{x}}{\partial x}+\dfrac{\partial u_{y}}{\partial y}=0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial u_{x}}{\partial t}+u_{x}\dfrac{\partial u_{x}}{\partial x}+u_{y}\dfrac{\partial u_{x}}{\partial y}=\nu\left(\dfrac{\partial^{2}u_{x}}{\partial y^{2}}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\nu$
+\end_inset
+
+ is kinematic viscosity of flow media (in this case it's air).
+\end_layout
+
+\begin_layout Subsection*
+Part II: Temperature Field
+\end_layout
+
+\begin_layout Standard
+Taking the flow as a 1D flow since we've already assumed that it's laminar
+ flow.
+ Deriving the energy equation near the plate:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial T}{\partial t}+u_{x}\dfrac{\partial T}{\partial x}=\alpha\dfrac{\partial^{2}T}{\partial x^{2}}+\dfrac{\overset{\centerdot}{Q}}{\rho C_{p}L}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is thermal diffusivity, 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is density and 
+\begin_inset Formula $C_{p}$
+\end_inset
+
+ is heat capacity (constant pressure) of air.
+ 
+\end_layout
+
+\begin_layout Standard
+Then the energy equation in the flow could be generally written as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\dfrac{\partial T}{\partial t}+u_{x}\dfrac{\partial T}{\partial x}=\alpha\dfrac{\partial^{2}T}{\partial x^{2}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus once velocity field is acquired, temperature field could be solved
+ with the equation above.
+ Parameters involved in these equations are acquired from the standard table,
+ with the assumption that coefficients at 
+\begin_inset Formula $20^{\circ}C$
+\end_inset
+
+ could be valid through out the calculation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\nu$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1.568\times10^{-5}m^{2}/s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $22.07\times10^{-6}m^{2}/s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1.177kg/m^{3}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $C_{p}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1.0049kJ/kgK$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Parameters applied in our computation (at a temperature of 
+\begin_inset Formula $20^{\circ}C$
+\end_inset
+
+ )
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Discretization of Computational Domain
+\end_layout
+
+\begin_layout Standard
+Setting up a 2D flowing domain and assume it's viscous all over the region.
+ The region is of rectangular shape with longer edge having same length
+ of 
+\begin_inset Formula $L=1m$
+\end_inset
+
+.
+ Applying boundary conditions to the physical domain:
+\end_layout
+
+\begin_layout Standard
+For velocity and temperature fields:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="5">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Patch
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Inlet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Outlet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Upper Wall
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bottom Wall
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Fixed Value of 
+\begin_inset Formula $1m/s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Zero Gradient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Zero Gradient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No Slip
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Velocity Field Boundary Condition
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="5">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Patch
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Inlet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Outlet
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Upper Wall
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bottom Wall
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Zero Gradient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Zero Gradient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Zero Gradient
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Fixed Gradient of 
+\begin_inset Formula $\dfrac{\overset{\centerdot}{Q}}{\rho C_{p}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Temperature Field Boundary Condition
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Boundary Conditions for Velocity Field and Temperature Field 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Calculating the parameter mentioned in the table above: 
+\begin_inset Formula $\dfrac{\overset{\centerdot}{Q}}{\rho C_{p}L}=0.169K/s$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+For this problem, we generated a grid of 100 elements along length and 20
+ elements along thickness.
+ In OpemFOAM, even 2D problem have to be meshed in 3D's manner.
+ Yet by simply setting front and back faces as type of 
+\begin_inset Quotes eld
+\end_inset
+
+empty
+\begin_inset Quotes erd
+\end_inset
+
+ could easily converge the grid constructed in 3D into a 2D description.
+ The grid is somehow a bit rough which is because we have to consider the
+ effect of Courant Number since high resolution in space may result in instabili
+ty of our computation (Courant Number exceeds 1).
+ Smaller time interval reduces the spacial resolution of our grid and it's
+ why we are using relatively rough grid in this case.
+\end_layout
+
+\begin_layout Standard
+Grid generated using 
+\begin_inset Quotes eld
+\end_inset
+
+blockMesh
+\begin_inset Quotes erd
+\end_inset
+
+ command in OpenFOAM is shown down below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/wdmaniac/OpenFOAM/wdmaniac-3.0.x/run/Assignment3a/Grid.jpg
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Grid Generated for Problem Solving, where air flow layer thickness is 0.1m
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Numerical Solution and Results Analysis
+\end_layout
+
+\begin_layout Standard
+Since in this problem, temperature field and velocity field are uncoupled,
+ I applied solver 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $icoFOAM$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to solve for velocity field and 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $scalarTransportFoam$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to solve for temperature field.
+ 
+\end_layout
+
+\begin_layout Standard
+Applying boundary conditions mentioned above for velocity field and solve
+ it using
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $icoFOAM$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+solver.
+ Since this is a transient problem, we have to make sure that the system
+ will reach steady state after certain amount of time.
+ In my computation I calculated the flow field from 
+\begin_inset Formula $0s$
+\end_inset
+
+ to 
+\begin_inset Formula $10s$
+\end_inset
+
+ at an interval of 
+\begin_inset Formula $0.005s$
+\end_inset
+
+.
+ The result indicates clearly that there exist a boundary layer near the
+ non-slipping surface, and it's adjacent domain do have minor velocity component
+ along 
+\begin_inset Formula $y$
+\end_inset
+
+ axis.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/wdmaniac/OpenFOAM/wdmaniac-3.0.x/run/Assignment3a/result_velocity.jpg
+	scale 20
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Magnitude of Velocity
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/wdmaniac/OpenFOAM/wdmaniac-3.0.x/run/Assignment3a/result_vx.jpg
+	scale 15
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Velocity along 
+\begin_inset Formula $x$
+\end_inset
+
+ axis
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/wdmaniac/OpenFOAM/wdmaniac-3.0.x/run/Assignment3a/result_vy.jpg
+	scale 15
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Velocity along 
+\begin_inset Formula $y$
+\end_inset
+
+ axis
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Velocity Field Acquired from Solver
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $icoFOAM$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ at 
+\begin_inset Formula $t=10s$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then we incouple this result to solve for temperature field using 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $scalarTransportFoam$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This solver will read in pre-calculated flow field (in the format of a
+ vector field) and calculate scalar field based on it.
+ In our case the temperature field and velocity field are not coupled and
+ thus we could apply such method.
+ If parameters like viscosity is related with temperature or diffusion coefficie
+nts related with coordinates we have to apply coupling methods.
+\end_layout
+
+\begin_layout Standard
+Temperature Field acquired from our calculation is shown down below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/wdmaniac/OpenFOAM/wdmaniac-3.0.x/run/2D_Convection/result_T.jpg
+	scale 20
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Temperature Field Acquired from Solver 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $scalarTransportFoam$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Attachment: OpenFOAM Scripts
+\end_layout
+
+\begin_layout Subsection*
+Part I: Flow field solution
+\end_layout
+
+\begin_layout Standard
+Grid Generation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "part1/blockMeshDict"
+lstparams "caption={blockMeshDict},label={blockMeshDict}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Boundary Conditions:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "part1/boundary"
+lstparams "caption={boundary},label={boundary}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Control Dictionary:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "part1/controlDict"
+lstparams "caption={controlDict},label={controlDict}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Initial Velocity Field:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "part1/U"
+lstparams "caption={U},label={U}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Part II: Tempreture field solution
+\end_layout
+
+\begin_layout Standard
+Boundary Conditions:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "part2/boundary"
+lstparams "caption={boundary},label={boundary}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tempreture Field:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "part2/T"
+lstparams "caption={T},label={T}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Velocity field is acquired from the last step of part I.
+ The script is too long to be implanted.
+\end_layout
+
+\end_body
+\end_document

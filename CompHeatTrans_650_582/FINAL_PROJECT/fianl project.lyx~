@@ -1,0 +1,798 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Computational Heat Transfer: Final Project
+\end_layout
+
+\begin_layout Author
+Ran Li
+\end_layout
+
+\begin_layout Section
+Problem Statement
+\end_layout
+
+\begin_layout Standard
+Problem 8.8:
+\end_layout
+
+\begin_layout Standard
+Consider a heated cylindrical rod emerging at time t = 0, from a die at
+ temperature 
+\begin_inset Formula $T_{0}$
+\end_inset
+
+, as shown in Fig.
+ 8.5b.
+ Assuming axisymmetry, develop a numerical scheme to solve for the time-dependen
+t temperature distribution in the material, if the rod loses energy by convectio
+n to ambient fluid at a constant value of heat transfer coefficient.
+\end_layout
+
+\begin_layout Section
+Mathematical Analysis
+\end_layout
+
+\begin_layout Standard
+This is a modified 1-D heat conduction problem with convection terms at
+ each point on the entity.
+ Setup of the problem is shown down below.
+ The basic idea is to take the changing length of the rod as constant over
+ certain time interval 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+ so that by solving for transient behavior of the beam we can approximate
+ the real phenomena.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename setup.jpg
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Problem Setup
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mathematically, governing equation for such problem is: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho C\left(\dfrac{\partial T}{\partial t}+U\dfrac{\partial T}{\partial x}\right)=k\dfrac{\partial^{2}T}{\partial x^{2}}-\dfrac{hP}{A}\left(T-T_{a}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Only convection term is taken into consideration as mentioned in the problem
+ description.
+ Boundary condition could be specified as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x=0:T\left(x\right)=T_{0}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+x=L\left(t\right):-k\dfrac{\partial T}{\partial x}=h\left(T-T_{ambient}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since 
+\begin_inset Formula $L\left(t\right)$
+\end_inset
+
+ is constantly changing with time:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+L\left(t\right)=Ut
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus we take 
+\begin_inset Formula $L\left(t\right)$
+\end_inset
+
+ as constant over certain time interval 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+ and by taking heat conduction within each interval as common transient
+ problem of 1-D beam the problem could be solved.
+ The iteration scheme is shown in figure down below.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename iteration.jpg
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Iteration Scheme of the Problem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Method Applied and Grid Generation
+\end_layout
+
+\begin_layout Standard
+For this problem I selected FTCS finite difference method.
+ The reason of my choice is that this problem could be devided into superpositio
+n of multiple simple heat conduction problems which could be easily solved
+ using explicit method.
+ Also code for explicit method is much more easier to compose and modify.
+ 
+\end_layout
+
+\begin_layout Standard
+This problem is a 1-D problem and thus it's discretization is done by dividing
+ the longtitude region of the beam into multiple discrete nodes.
+ Since it's quite simple and straight forward I incoupled the mesh generation
+ within my solver.
+\end_layout
+
+\begin_layout Standard
+MATLAB code composed for this problem is as shown:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "test_final.m"
+lstparams "caption={MATLAB function},label={test_final.m}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Numerical Scheme Setup
+\end_layout
+
+\begin_layout Standard
+Discretizing the physical domain using finite difference approach:(within
+ certain 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho C\left[\dfrac{T_{i}^{\left(n+1\right)}-T_{i}^{\left(n\right)}}{\Delta t}+U\dfrac{T_{i+1}^{\left(n\right)}-T_{i-1}^{\left(n\right)}}{2\Delta x}\right]=k\dfrac{T_{i+1}^{\left(n\right)}-2T_{i}^{\left(n\right)}+T_{i-1}^{\left(n\right)}}{\Delta x^{2}}-\dfrac{hP}{A}\left(T_{i}^{\left(n\right)}-T_{a}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Rearranging terms and thus the forward iteration could be derived:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+T_{i}^{\left(n+1\right)}=\left(F_{o}-\dfrac{U\Delta t}{2\Delta x}\right)T_{i+1}^{\left(n\right)}+\left(1-2F_{o}-\dfrac{hP\Delta t}{\rho CA}\right)T_{i}^{\left(n\right)}+\left(F_{o}+\dfrac{U\Delta t}{2\Delta x}\right)T_{i-1}^{\left(n\right)}+\dfrac{hP\Delta t}{\rho CA}T_{a}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Yet in our computation, at each time step we are assuming that current length
+ of the rod is a constant.
+ Thus terms including variable 
+\begin_inset Formula $U$
+\end_inset
+
+ will be all cancelled, which result in our final governing equation for
+ computation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+T_{i}^{\left(n+1\right)}=\left(F_{o}\right)T_{i+1}^{\left(n\right)}+\left(1-2F_{o}-\dfrac{hP\Delta t}{\rho CA}\right)T_{i}^{\left(n\right)}+\left(F_{o}\right)T_{i-1}^{\left(n\right)}+\dfrac{hP\Delta t}{\rho CA}T_{a}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is our formular to solve for tempreture distribution within certain
+ 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+.
+ For each time step, extrusion points (first node of the rod) will be initialize
+d as constant tempreture of 
+\begin_inset Formula $T_{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Results and Compare
+\end_layout
+
+\begin_layout Standard
+In my computation, physical parameters could be found in section 3 where
+ I inserted MATLAB code, while my inputs for function are chosen as shown
+ in the table below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Input Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meaning
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+dt
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time Step for Iteration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1\times10^{-3}s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+dx
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Grid Size
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Udt$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Extrusion Speed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $2m/s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Rod Diameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1\times10^{-3}m$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+duration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Total Time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Input Parameters
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The result from my code could be hardly called satisfactory, yet I believe
+ it does explained about behavior of rod when 
+\begin_inset Formula $L$
+\end_inset
+
+ is big enough.
+ This figure shows tempreture distribution when time is quite short.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename result.jpg
+	scale 20
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Tempreture Distribution w.r.t.
+ Time
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In comparison with what I found in the textbook(down below), it is clear
+ that my calculation is about the same with standard result.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename IMG_5534.JPG
+	scale 10
+	rotateAngle 90
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Standard Solution from Textbook
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When it comes to the long term behavior, it seems that the solution is quite
+ alike the standard result.
+ According to analytical analysis, when 
+\begin_inset Formula $L\left(t\right)$
+\end_inset
+
+ is big enough, the governing equation will collapse into:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho C\left(U\dfrac{\partial T}{\partial x}\right)=k\dfrac{\partial^{2}T}{\partial x^{2}}-\dfrac{hP}{A}\left(T-T_{a}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This solution will be quite alike to standard 1-D beam heat conduction problem.
+ What I got from my code also shows this property.
+ The result I got for long time scale is shown down below:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename longtime.jpg
+	scale 20
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Result for long timescale
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+In this program I practiced setting up speciallized FDM scheme from governing
+ equation for certain problem.
+ It took some time even after the semester for me to get it right but I
+ did learnt a lot from this project.
+ This document is a make up for my previous mistake in final project.
+\end_layout
+
+\end_body
+\end_document
